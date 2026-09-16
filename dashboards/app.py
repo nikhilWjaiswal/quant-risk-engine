@@ -233,6 +233,7 @@ def load_ticker_data(tickers: tuple[str, ...], period: str = "2y") -> pd.DataFra
                 series = df.iloc[:, 0]
             if isinstance(series, pd.DataFrame):
                 series = series.iloc[:, 0]
+            series = pd.to_numeric(series, errors="coerce").dropna()
             series.name = t_clean
             prices_dict[t_clean] = series
         except Exception as err:
@@ -241,6 +242,7 @@ def load_ticker_data(tickers: tuple[str, ...], period: str = "2y") -> pd.DataFra
     if not prices_dict:
         raise ValueError("Failed to retrieve price series for requested tickers.")
     combined = pd.DataFrame(prices_dict).dropna()
+    combined = combined.apply(pd.to_numeric, errors="coerce").dropna()
     return combined
 
 
@@ -371,6 +373,7 @@ with st.sidebar:
         format="%d",
     )
 
+prices_df = prices_df.apply(pd.to_numeric, errors="coerce").dropna()
 asset_names = list(prices_df.columns)
 n_assets = len(asset_names)
 

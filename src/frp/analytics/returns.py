@@ -8,7 +8,8 @@ from frp.config import TRADING_DAYS_PER_YEAR
 
 def log_returns(prices: pd.Series) -> pd.Series:
     """Compute daily log returns from a price series."""
-    return np.log(prices / prices.shift(1)).dropna()
+    clean_prices = pd.to_numeric(pd.Series(prices), errors="coerce").dropna()
+    return np.log(clean_prices / clean_prices.shift(1)).dropna()
 
 
 def rolling_volatility(returns: pd.Series, window: int = 30, annualize: bool = True) -> pd.Series:
